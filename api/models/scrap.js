@@ -23,7 +23,11 @@ var scrap = new Schema({
   created_at : {
     type: Date,
     default : new Date()
-  }
+  },
+  location : String,
+  description: String(),
+  contact_no : String(),
+  link : String()
 });
 
 module.exports = mongoose.model('scrap', scrap);

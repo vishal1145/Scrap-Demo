@@ -55,6 +55,14 @@
     scrapData(req.body, res, next)
   })
 
+  function waittime(time) {
+    return new Promise((resolve, reject) => {
+      setTimeout(function () {
+        resolve(true);
+      }, time)
+    });
+  }
+
   async function scrapData(url, res, next) {
     console.log("Ready to Scarp")
     let temp = []
@@ -62,6 +70,15 @@
       .withCapabilities(webdriver.Capabilities.chrome())
       .build();
     try {
+
+      //Login
+      await driver.get('https://www.kijiji.ca/t-login.html');
+      await driver.findElement(By.id("LoginEmailOrNickname")).sendKeys('vikash.gaurav@ithours.com');
+      await driver.findElement(By.id("login-password")).sendKeys('Vikash@721');
+      await driver.findElement(By.id('SignInButton')).click()
+      console.log('login sucess')
+      await waittime(5000);
+      
       await driver.get(url.url);
       var elements = await driver.findElements(By.className('clearfix'))
       let images = await driver.findElements(By.xpath("//div[@class='clearfix']/div[@class='left-col']/div[@class='image']/img"))
@@ -121,14 +138,24 @@
   
       for (let i = 0; i < temp.length; i++) {
         let image = []
-        await driver.get('https://www.kijiji.ca/v-cars-trucks/edmonton/' + temp[i].title + '/' + temp[i].addid);
+        let link = 'https://www.kijiji.ca/v-cars-trucks/edmonton/' + temp[i].title + '/' + temp[i].addid;
+        await driver.get(link);
         let key = await driver.findElements(By.className('attributeLabel-240934283'))
         let numval = await driver.findElements(By.className('attributeValue-2574930263'))
-  
+        try{
+        var loc = await driver.findElement(By.className('address-3617944557'))
+        }catch(e){        }
+        try{
+        var desc = await driver.findElement(By.xpath("//div[@class='descriptionContainer-3544745383']/div/p"))
+        }catch(e){}
+        let location = await loc.getText();
+        let description = await desc.getText()
+        
         for (let j = 0; j < key.length; j++) {
           var objKey = '', objVal = '';
           objKey = await key[j].getText();
           objVal = await numval[j].getText();
+          
   
           if (objKey == 'Body Type') {
             temp[i].body_type = objVal
@@ -170,7 +197,29 @@
             temp[i].year = objVal
           }
         }
+
+        temp[i].link = link
+        temp[i].location = location
+        temp[i].description = description
+
         try {
+          try {
+            await driver.findElement(By.className('revealCopy-3312312496')).click()
+            await waittime(1000);
+            let contact = await driver.findElement(By.className('phoneShowNumberButton-1052915314')).getText()
+            temp[i].contact_no = contact
+          } catch (e) {
+            await driver.findElement(By.className('generalOverlay-3991437088')).click()
+            let allImg = await driver.findElements(By.xpath("//li[@class='slide-886422699']/div[@class='mediaUnit-4218443897']/img"))
+            for (let m = 0; m < allImg.length; m++) {
+              let img = await allImg[m].getAttribute('src')
+              image.push(img)
+            }
+            temp[i].image = image
+            let tosave = await Scrap.update({ addid: temp[i].addid }, { $set: temp[i] }, { upsert: true, new: true })
+            continue
+          }
+
           await driver.findElement(By.className('generalOverlay-3991437088')).click()
           let allImg = await driver.findElements(By.xpath("//li[@class='slide-886422699']/div[@class='mediaUnit-4218443897']/img"))
           for (let m = 0; m < allImg.length; m++) {
