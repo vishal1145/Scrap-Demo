@@ -10,8 +10,8 @@ var controller = require('./controller/data')
 var user = require('./controller/login')
 var CronJob = require('cron').CronJob;
 
-//mongoose.connect('mongodb://157.230.57.197:27017/scarpingdemo');
-mongoose.connect('mongodb://localhost:27017/scarpingdemo');
+mongoose.connect('mongodb://157.230.57.197:27017/scarpingdemo');
+//mongoose.connect('mongodb://localhost:27017/scarpingdemo');
 const Schema = mongoose.Schema;
 
 app.use(cors())
