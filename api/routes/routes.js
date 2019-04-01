@@ -6,4 +6,9 @@
   const mongoose = require('mongoose');
 
   
+  router.get('/getData', function(req, res){
+    return 'test'
+  })
+
+
   module.exports = router;
