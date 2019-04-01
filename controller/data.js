@@ -107,7 +107,6 @@
       //Scrap data from page 2 to 10
       var str = url.url
       var fUrl = str.split("/");
-      console.log(temp)
       for (let l = 2; l <= 10; l++) {
         let url2 = fUrl[0] +'//'+ fUrl[1] +'/'+ fUrl[2] +'/'+ fUrl[3] +'/'+ fUrl[4] +'/'+ fUrl[5] + '/page-' + l +'/'+ fUrl[6] 
         await driver.get(url2);
@@ -144,12 +143,18 @@
         let numval = await driver.findElements(By.className('attributeValue-2574930263'))
         try{
         var loc = await driver.findElement(By.className('address-3617944557'))
-        }catch(e){        }
+        let location = await loc.getText();
+        temp[i].location = location
+        }catch(e){  
+          console.log(e)
+          }
         try{
         var desc = await driver.findElement(By.xpath("//div[@class='descriptionContainer-3544745383']/div/p"))
-        }catch(e){}
-        let location = await loc.getText();
         let description = await desc.getText()
+        temp[i].description = description
+        }catch(e){
+          console.log(e)
+        }
         
         for (let j = 0; j < key.length; j++) {
           var objKey = '', objVal = '';
@@ -199,8 +204,6 @@
         }
 
         temp[i].link = link
-        temp[i].location = location
-        temp[i].description = description
 
         try {
           try {
@@ -209,15 +212,7 @@
             let contact = await driver.findElement(By.className('phoneShowNumberButton-1052915314')).getText()
             temp[i].contact_no = contact
           } catch (e) {
-            await driver.findElement(By.className('generalOverlay-3991437088')).click()
-            let allImg = await driver.findElements(By.xpath("//li[@class='slide-886422699']/div[@class='mediaUnit-4218443897']/img"))
-            for (let m = 0; m < allImg.length; m++) {
-              let img = await allImg[m].getAttribute('src')
-              image.push(img)
-            }
-            temp[i].image = image
-            let tosave = await Scrap.update({ addid: temp[i].addid }, { $set: temp[i] }, { upsert: true, new: true })
-            continue
+            console.log(e)
           }
 
           await driver.findElement(By.className('generalOverlay-3991437088')).click()
