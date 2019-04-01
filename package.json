@@ -1,0 +1,25 @@
+{
+  "name": "todolistapi",
+  "version": "1.0.0",
+  "description": "RESTful api",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo",
+    "start": "node server.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "nodemon": "^1.18.10"
+  },
+  "dependencies": {
+    "anticaptcha": "^1.0.6",
+    "body-parser": "^1.18.3",
+    "chromedriver": "^2.46.0",
+    "cors": "^2.8.5",
+    "cron": "^1.7.0",
+    "express": "^4.16.4",
+    "mongoose": "^5.4.19",
+    "selenium-webdriver": "^4.0.0-alpha.1"
+  }
+}
