@@ -18,7 +18,7 @@
     let pagdata = await Scrap.find({})
 
     let recpage = Number(req.query.page) || 1;
-    let limit = Number(req.query.limit) || 10
+    let limit = Number(req.query.limit) || pagdata.length
   
     function Paginator(items) {
   

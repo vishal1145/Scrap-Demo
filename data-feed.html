@@ -1,0 +1,205 @@
+<html>
+
+<head>
+    <title> Data Feed </title>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.3.3/angular.min.js"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/ng-table/0.8.3/ng-table.min.js"></script>
+
+
+    <style>
+        td p {
+            text-overflow: ellipsis !important;
+            overflow: hidden;
+            white-space: nowrap;
+            width: 135px;
+        }
+    </style>
+</head>
+
+<body style="padding: 20px;">
+
+
+
+    <div ng-app="MyApp" ng-controller="AgeController" ng-init="arr=[]">
+
+        <h1 style="text-align: center;">Scrap Data Feeds</h1>
+        <br /><br />
+        Url Examples</br>
+        <span>https://www.kijiji.ca/b-cars-trucks/edmonton-area/new__used/c174l1700202a49?for-sale-by=ownr</span><br />
+        <span>https://www.kijiji.ca/b-cars-trucks/calgary/car/k0c174l1700199?for-sale-by=ownr</span><br />
+        <span>https://www.kijiji.ca/b-cars-trucks/british-columbia/new__used/c174l9007a49?for-sale-by=ownr</span>
+        <br /><br />
+        <input type="text" placeholder="Url" size="80" ng-model="enterUrl" />
+        <input type="button" ng-click="AddFunction()" value="Scrap Url" />
+
+
+        <input type="button" ng-click="getAllData()" value="Fetch Scraped Data" />
+
+
+        <br />
+        <br />
+        <br />
+
+        <table ng-table="tableParams" class="table table-striped" show-filter="false" width="90%" style="height: 100%;">
+            <tr ng-repeat="user in $data">
+                <td title="'Add Id'" style="text-align: center">
+                    {{user.addid}}&nbsp&nbsp</td>
+                <td title="'Title'"  style="text-align: center">
+                    <p title="{{user.title}}">{{user.title}}</p></td>
+                <td title="'Body Type'" style="text-align: center">
+                    <p title="{{user.body_type}}">{{user.body_type}}</p></td>
+                <td title="'Colour'"style="text-align: center">
+                    {{user.colour}}</td>
+                <td title="'Condition'" style="text-align: center">
+                    {{user.condition}}</td>
+                <td title="'Drivetrain'"   style="text-align: center">
+                    <p title="{{user.drivetrain}}">{{user.drivetrain}}</p></td>
+                <td title="'Fuel Type'" style="text-align: center">
+                    {{user.fuel_type}}</td>
+                <td title="'Image'"  width="100px" style="text-align: center">
+                    <a style="cursor: pointer" ng-click="openModel(user.image)">{{user.image.length}}</span>
+                </td>
+                <td title="'Kilometers'" style="text-align: center">
+                    {{user.kilometers}}</td>
+                <td title="'Make'" style="text-align: center">
+                    {{user.make}}</td>
+                <td title="'Model'" style="text-align: center">
+                    {{user.model}}</td>
+                <td title="'No of Seats'" style="text-align: center">
+                    {{user.no_of_Seats}}</td>
+                <td title="'price'" style="text-align: center">
+                    {{user.price}}</td>
+                <td title="'Transmission'" style="text-align: center">
+                    {{user.transmission}}</td>
+                <td title="'Year'"  style="text-align: center">
+                    {{user.year}}</td>
+                <td title="'Contact No'"  style="text-align: center">
+                    <p title="{{user.contact_no}}">{{user.contact_no}}</p></td>
+                <td title="'Location'" style="text-align: center">
+                    <p title="{{user.location}}">{{user.location}}</p></td>
+                <td title="'Description'" style="text-align: center">
+                    <p title="{{user.description}}">{{user.description}}</p></td>
+                <td title="'Link'" style="text-align: center">
+                    <p title="{{user.link}}">{{user.link}}</p></td>
+
+            </tr>
+        </table>
+
+        <div class="modal" id="myModal" role="dialog" style="overflow:scroll">
+            <div class="modal-dialog">
+
+                <!-- Modal content-->
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" ng-click="Close()" class="close" data-dismiss="modal">&times;</button>
+                        <h4 class="modal-title">Images</h4>
+                    </div>
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="col-md-6" ng-repeat="image in images">
+                                <img style="height: 250px;width:100%;object-fit: cover;" src="{{image}}" />
+
+                            </div>
+                        </div>
+
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" ng-click="Close()"
+                            data-dismiss="modal">Close</button>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+
+
+    <script>
+        var App = angular.module("MyApp", ["ngTable"]);
+        App.controller('AgeController', ['$scope', '$http', 'ngTableParams', function ($scope, $http, ngTableParams) {
+
+            var i;
+
+            $scope.getAllData = function () {
+                var settings = {
+                    "async": true,
+                    "crossDomain": true,
+                    "url": "http://localhost:9105/api/getAllData",
+                    "method": "GET",
+                    "headers": {
+                        "content-type": "application/json",
+                        "cache-control": "no-cache",
+                        "postman-token": "c681ecd3-f34e-522d-f0a2-1936ee16d18a"
+                    }
+                }
+
+                $.ajax(settings).done(function (res) {
+                    $scope.tableParams = new ngTableParams({
+                        page: 1,
+                        count: 10
+                    }, {
+                            total: res.data.length,
+                            getData: function ($defer, params) {
+                                $scope.$data = res.data.slice((params.page() - 1) * params.count(), params.page() * params.count());
+                                $defer.resolve($scope.$data);
+                            }
+                        });
+                });
+            }
+
+            $scope.AddFunction = function () {
+                var obj = {}
+                obj.url = $scope.enterUrl
+                if (obj.url) {
+                    var settings = {
+                        "async": true,
+                        "crossDomain": true,
+                        "url": "http://localhost:9105/api/scrapData",
+                        "method": "POST",
+                        "headers": {
+                            "content-type": "application/json",
+                            "cache-control": "no-cache",
+                            "postman-token": "0dd6c75e-a927-f203-e905-c6d0106b21f8"
+                        },
+                        "processData": false,
+                        "data": JSON.stringify(obj)
+                    }
+
+                    $.ajax(settings).done(function (response) {
+                        console.log(response);
+                    });
+                    alert('Scrap started in another chrome window')
+                    $scope.enterUrl = '';
+                } else {
+                    alert('Url is empty')
+                }
+            }
+
+            $scope.openModel = function (image) {
+                $scope.images = image
+                $('#myModal').show();
+            }
+
+            $scope.Close = function () {
+                $("#myModal").hide();
+            }
+
+            $scope.getAllData();
+
+            window.onmouseover=function(e) {
+                if(e.target.tagName == "P"){
+                    console.log(e.target.outerText);
+                }
+            };
+
+        }])
+
+    </script>
+
+</body>
+
+</html>
