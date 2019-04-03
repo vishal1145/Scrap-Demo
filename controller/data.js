@@ -15,7 +15,7 @@
 
   
   router.get('/getAllData', async function(req, res){
-    let pagdata = await Scrap.find({})
+    let pagdata = await Scrap.find({}).sort({created_at : -1})
 
     let recpage = Number(req.query.page) || 1;
     let limit = Number(req.query.limit) || pagdata.length
