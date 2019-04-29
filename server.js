@@ -10,8 +10,13 @@ var controller = require('./controller/data')
 var user = require('./controller/login')
 var CronJob = require('cron').CronJob;
 
-mongoose.connect('mongodb://157.230.57.197:27017/scarpingdemo');
-//mongoose.connect('mongodb://localhost:27017/scarpingdemo');
+var mongo_url = "mongodb+srv://moros:carscrapdemo@cluster0-t0bwd.mongodb.net/test?retryWrites=true";
+//mongoose.connect('mongodb://157.230.57.197:27017/scarpingdemo');
+mongoose.connect(mongo_url, function(err, res){
+  // console.log(res);
+  console.log(err);
+});
+
 const Schema = mongoose.Schema;
 
 app.use(express.static(__dirname + '/public'));
